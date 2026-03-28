@@ -9,7 +9,7 @@ export const RestartButton: React.FC<Props> = ({ onRestart }) => {
     <button
       onClick={onRestart}
       className="p-2 rounded-lg transition-all duration-200 hover:scale-110"
-      style={{ color: '#4a4e69' }}
+      style={{ color: '#7a4d63' }}
       title="Restart test (Tab + Enter)"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

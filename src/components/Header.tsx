@@ -15,21 +15,21 @@ export const Header: React.FC<Props> = ({ onViewChange, onSettingsOpen }) => {
         className="flex items-center gap-3 group"
       >
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="group-hover:scale-110 transition-transform">
-          <circle cx="16" cy="15" r="10" fill="none" stroke="#f7a8b8" strokeWidth="1.5"/>
-          <path d="M8 10 L5 5 L12 9 Z" fill="none" stroke="#f7a8b8" strokeWidth="1.5" strokeLinejoin="round"/>
-          <path d="M24 10 L27 5 L20 9 Z" fill="none" stroke="#f7a8b8" strokeWidth="1.5" strokeLinejoin="round"/>
-          <circle cx="13" cy="15" r="2" fill="#f7a8b8"/>
-          <circle cx="19" cy="15" r="2" fill="#f7a8b8"/>
-          <path d="M13 19 Q16 22 19 19" stroke="#f7a8b8" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-          <line x1="2" y1="14" x2="8" y2="15" stroke="#4a4e69" strokeWidth="1" strokeLinecap="round"/>
-          <line x1="24" y1="15" x2="30" y2="14" stroke="#4a4e69" strokeWidth="1" strokeLinecap="round"/>
-          <path d="M22 24 Q28 22 28 26 Q28 30 24 29" stroke="#f7a8b8" strokeWidth="1.5" fill="none"/>
+          <circle cx="16" cy="15" r="10" fill="none" stroke="#f7a8c0" strokeWidth="1.5"/>
+          <path d="M8 10 L5 5 L12 9 Z" fill="none" stroke="#f7a8c0" strokeWidth="1.5" strokeLinejoin="round"/>
+          <path d="M24 10 L27 5 L20 9 Z" fill="none" stroke="#f7a8c0" strokeWidth="1.5" strokeLinejoin="round"/>
+          <circle cx="13" cy="15" r="2" fill="#f7a8c0"/>
+          <circle cx="19" cy="15" r="2" fill="#f7a8c0"/>
+          <path d="M13 19 Q16 22 19 19" stroke="#f7a8c0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+          <line x1="2" y1="14" x2="8" y2="15" stroke="#7a4d63" strokeWidth="1" strokeLinecap="round"/>
+          <line x1="24" y1="15" x2="30" y2="14" stroke="#7a4d63" strokeWidth="1" strokeLinecap="round"/>
+          <path d="M22 24 Q28 22 28 26 Q28 30 24 29" stroke="#f7a8c0" strokeWidth="1.5" fill="none"/>
         </svg>
         <span
           className="text-2xl font-bold tracking-tight"
-          style={{ fontFamily: 'Nunito', color: '#f7a8b8' }}
+          style={{ fontFamily: 'Nunito', color: '#f7a8c0' }}
         >
-          NekoType
+          CatType
         </span>
       </button>
 
@@ -39,7 +39,7 @@ export const Header: React.FC<Props> = ({ onViewChange, onSettingsOpen }) => {
           onClick={() => onViewChange('gallery')}
           className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           title="Cat Gallery"
-          style={{ color: '#4a4e69' }}
+          style={{ color: '#7a4d63' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -51,7 +51,7 @@ export const Header: React.FC<Props> = ({ onViewChange, onSettingsOpen }) => {
           onClick={() => onViewChange('stats')}
           className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           title="Stats"
-          style={{ color: '#4a4e69' }}
+          style={{ color: '#7a4d63' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="2" y="2" width="5" height="14" rx="1"/>
@@ -64,7 +64,7 @@ export const Header: React.FC<Props> = ({ onViewChange, onSettingsOpen }) => {
           onClick={onSettingsOpen}
           className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           title="Settings"
-          style={{ color: '#4a4e69' }}
+          style={{ color: '#7a4d63' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="3"/>

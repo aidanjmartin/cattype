@@ -30,31 +30,31 @@ export const StatsPage: React.FC<Props> = ({ onBack }) => {
         <button
           onClick={onBack}
           className="p-2 rounded-lg transition-colors hover:bg-white/5"
-          style={{ color: '#4a4e69' }}
+          style={{ color: '#7a4d63' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>
         </button>
-        <h1 className="text-2xl font-bold" style={{ color: '#f5f0e8' }}>your stats</h1>
+        <h1 className="text-2xl font-bold" style={{ color: '#fceef5' }}>your stats</h1>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'best wpm', value: bestResult ? bestResult.wpm : '--', color: '#f7a8b8' },
-          { label: 'avg wpm', value: avgWpm || '--', color: '#b8e0d2' },
-          { label: 'tests', value: results.length, color: '#f5f0e8' },
+          { label: 'best wpm', value: bestResult ? bestResult.wpm : '--', color: '#f7a8c0' },
+          { label: 'avg wpm', value: avgWpm || '--', color: '#98d4b8' },
+          { label: 'tests', value: results.length, color: '#fceef5' },
           {
             label: 'time spent',
             value: totalTime >= 3600
               ? `${Math.round(totalTime / 3600)}h`
               : `${Math.round(totalTime / 60)}m`,
-            color: '#f5f0e8'
+            color: '#fceef5',
           },
         ].map(({ label, value, color }) => (
-          <div key={label} className="rounded-xl p-4" style={{ background: '#16213e' }}>
-            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#4a4e69' }}>{label}</div>
+          <div key={label} className="rounded-xl p-4" style={{ background: '#2b1622' }}>
+            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#7a4d63' }}>{label}</div>
             <div className="text-3xl font-bold font-mono" style={{ color }}>{value}</div>
           </div>
         ))}
@@ -62,12 +62,12 @@ export const StatsPage: React.FC<Props> = ({ onBack }) => {
 
       {/* Results Table */}
       {recentResults.length > 0 ? (
-        <div className="rounded-2xl overflow-hidden" style={{ background: '#16213e' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: '#2b1622' }}>
           <table className="w-full">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(74,78,105,0.3)' }}>
+              <tr style={{ borderBottom: '1px solid rgba(122,77,99,0.3)' }}>
                 {['date', 'wpm', 'accuracy', 'mode', 'time'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs uppercase tracking-widest" style={{ color: '#4a4e69' }}>
+                  <th key={h} className="px-4 py-3 text-left text-xs uppercase tracking-widest" style={{ color: '#7a4d63' }}>
                     {h}
                   </th>
                 ))}
@@ -75,19 +75,19 @@ export const StatsPage: React.FC<Props> = ({ onBack }) => {
             </thead>
             <tbody>
               {recentResults.map((r, i) => (
-                <tr key={r.id} style={{ borderBottom: i < recentResults.length - 1 ? '1px solid rgba(74,78,105,0.15)' : 'none' }}>
-                  <td className="px-4 py-3 text-xs" style={{ color: '#4a4e69' }}>{formatDate(r.timestamp)}</td>
-                  <td className="px-4 py-3 font-mono font-bold" style={{ color: '#f7a8b8' }}>{r.wpm}</td>
-                  <td className="px-4 py-3 font-mono" style={{ color: '#b8e0d2' }}>{r.accuracy}%</td>
-                  <td className="px-4 py-3 text-xs" style={{ color: '#4a4e69' }}>{r.wordSet}</td>
-                  <td className="px-4 py-3 text-xs font-mono" style={{ color: '#4a4e69' }}>{r.duration}s</td>
+                <tr key={r.id} style={{ borderBottom: i < recentResults.length - 1 ? '1px solid rgba(122,77,99,0.15)' : 'none' }}>
+                  <td className="px-4 py-3 text-xs" style={{ color: '#7a4d63' }}>{formatDate(r.timestamp)}</td>
+                  <td className="px-4 py-3 font-mono font-bold" style={{ color: '#f7a8c0' }}>{r.wpm}</td>
+                  <td className="px-4 py-3 font-mono" style={{ color: '#98d4b8' }}>{r.accuracy}%</td>
+                  <td className="px-4 py-3 text-xs" style={{ color: '#7a4d63' }}>{r.wordSet}</td>
+                  <td className="px-4 py-3 text-xs font-mono" style={{ color: '#7a4d63' }}>{r.duration}s</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="text-center py-12" style={{ color: '#4a4e69' }}>
+        <div className="text-center py-12" style={{ color: '#7a4d63' }}>
           <p className="text-lg mb-2">no tests yet!</p>
           <p className="text-sm">complete a typing test to see your stats here</p>
         </div>

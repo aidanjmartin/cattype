@@ -183,15 +183,15 @@ export default function App() {
   // Apply theme CSS variables
   useEffect(() => {
     if (settings.theme === 'light') {
-      document.documentElement.style.setProperty('--bg', '#fdf6e3');
-      document.documentElement.style.setProperty('--surface', '#fff8ef');
-      document.documentElement.style.setProperty('--cream', '#2d2d2d');
-      document.documentElement.style.setProperty('--muted', '#9a9a9a');
+      document.documentElement.style.setProperty('--bg', '#fff5f8');
+      document.documentElement.style.setProperty('--surface', '#fce9ef');
+      document.documentElement.style.setProperty('--cream', '#2d1a22');
+      document.documentElement.style.setProperty('--muted', '#b07888');
     } else {
-      document.documentElement.style.setProperty('--bg', '#1a1a2e');
-      document.documentElement.style.setProperty('--surface', '#16213e');
-      document.documentElement.style.setProperty('--cream', '#f5f0e8');
-      document.documentElement.style.setProperty('--muted', '#4a4e69');
+      document.documentElement.style.setProperty('--bg', '#1e1015');
+      document.documentElement.style.setProperty('--surface', '#2b1622');
+      document.documentElement.style.setProperty('--cream', '#fceef5');
+      document.documentElement.style.setProperty('--muted', '#7a4d63');
     }
   }, [settings.theme]);
 
@@ -199,11 +199,11 @@ export default function App() {
 
   if (isMobile) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-8 text-center" style={{ background: '#1a1a2e' }}>
+      <div className="min-h-screen flex items-center justify-center p-8 text-center" style={{ background: '#1e1015' }}>
         <div>
           <CatMascot state="sleepy" animated={true} />
-          <h1 className="text-2xl font-bold mt-4 mb-2" style={{ color: '#f7a8b8' }}>NekoType</h1>
-          <p style={{ color: '#4a4e69' }}>For the best typing experience, please use a desktop browser with a physical keyboard.</p>
+          <h1 className="text-2xl font-bold mt-4 mb-2" style={{ color: '#f7a8c0' }}>CatType</h1>
+          <p style={{ color: '#7a4d63' }}>For the best typing experience, please use a desktop browser with a physical keyboard.</p>
         </div>
       </div>
     );
@@ -252,10 +252,10 @@ export default function App() {
               />
 
               <div className="flex items-center justify-center gap-6 mt-6">
-                <span style={{ color: '#4a4e69', fontSize: '12px' }}>🐾</span>
+                <span style={{ color: '#7a4d63', fontSize: '12px' }}>🐾</span>
                 <Timer timeLeft={timeLeft} isRunning={isRunning} />
                 <RestartButton onRestart={restart} />
-                <span style={{ color: '#4a4e69', fontSize: '12px' }}>🐾</span>
+                <span style={{ color: '#7a4d63', fontSize: '12px' }}>🐾</span>
               </div>
 
               <div className="flex justify-center mt-4">
@@ -269,10 +269,10 @@ export default function App() {
               )}
 
               <div className="flex justify-center mt-4">
-                <p className="text-xs" style={{ color: '#4a4e69' }}>
-                  <kbd className="px-1.5 py-0.5 rounded" style={{ background: 'rgba(74,78,105,0.3)', fontSize: '11px' }}>Tab</kbd>
+                <p className="text-xs" style={{ color: '#7a4d63' }}>
+                  <kbd className="px-1.5 py-0.5 rounded" style={{ background: 'rgba(122,77,99,0.3)', fontSize: '11px' }}>Tab</kbd>
                   {' + '}
-                  <kbd className="px-1.5 py-0.5 rounded" style={{ background: 'rgba(74,78,105,0.3)', fontSize: '11px' }}>Enter</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded" style={{ background: 'rgba(122,77,99,0.3)', fontSize: '11px' }}>Enter</kbd>
                   {' — restart test'}
                 </p>
               </div>

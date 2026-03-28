@@ -3,20 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --bg: #1a1a2e;
-  --surface: #16213e;
-  --pink: #f7a8b8;
-  --green: #b8e0d2;
-  --cream: #f5f0e8;
-  --muted: #4a4e69;
-  --error: #ff6b6b;
+  --bg: #1e1015;
+  --surface: #2b1622;
+  --pink: #f7a8c0;
+  --green: #98d4b8;
+  --cream: #fceef5;
+  --muted: #7a4d63;
+  --error: #ff7878;
 }
 
 .light {
-  --bg: #fdf6e3;
-  --surface: #fff8ef;
-  --cream: #2d2d2d;
-  --muted: #9a9a9a;
+  --bg: #fff5f8;
+  --surface: #fce9ef;
+  --cream: #2d1a22;
+  --muted: #b07888;
 }
 
 * {
@@ -32,12 +32,12 @@ body {
   margin: 0;
 }
 
-/* Paw print background pattern */
+/* Sakura paw-print background pattern */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cellipse cx='30' cy='38' rx='8' ry='6' fill='%23f7a8b8' opacity='0.04'/%3E%3Ccircle cx='21' cy='28' r='4' fill='%23f7a8b8' opacity='0.04'/%3E%3Ccircle cx='39' cy='28' r='4' fill='%23f7a8b8' opacity='0.04'/%3E%3Ccircle cx='25' cy='22' r='3' fill='%23f7a8b8' opacity='0.04'/%3E%3Ccircle cx='35' cy='22' r='3' fill='%23f7a8b8' opacity='0.04'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cellipse cx='30' cy='38' rx='8' ry='6' fill='%23f7a8c0' opacity='0.06'/%3E%3Ccircle cx='21' cy='28' r='4' fill='%23f7a8c0' opacity='0.06'/%3E%3Ccircle cx='39' cy='28' r='4' fill='%23f7a8c0' opacity='0.06'/%3E%3Ccircle cx='25' cy='22' r='3' fill='%23f7a8c0' opacity='0.06'/%3E%3Ccircle cx='35' cy='22' r='3' fill='%23f7a8c0' opacity='0.06'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }
@@ -48,12 +48,10 @@ body::before {
   min-height: 100vh;
 }
 
-/* Smooth caret transition */
 .caret-smooth {
   transition: left 0.08s ease, top 0.08s ease;
 }
 
-/* Typing area */
 .typing-word {
   display: inline;
   white-space: pre;
@@ -64,7 +62,6 @@ body::before {
   display: inline-block;
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -78,12 +75,10 @@ body::before {
   border-radius: 2px;
 }
 
-/* Focus ring override */
 input:focus {
   outline: none;
 }
 
-/* Chart canvas */
 .wpm-chart {
   border-radius: 8px;
 }

@@ -8,15 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        'neko-bg': '#1a1a2e',
-        'neko-surface': '#16213e',
-        'neko-pink': '#f7a8b8',
-        'neko-green': '#b8e0d2',
-        'neko-cream': '#f5f0e8',
-        'neko-muted': '#4a4e69',
-        'neko-error': '#ff6b6b',
-        'neko-light-bg': '#fdf6e3',
-        'neko-light-surface': '#fff8ef',
+        'cat-bg': '#1e1015',
+        'cat-surface': '#2b1622',
+        'cat-pink': '#f7a8c0',
+        'cat-mint': '#98d4b8',
+        'cat-cream': '#fceef5',
+        'cat-muted': '#7a4d63',
+        'cat-error': '#ff7878',
+        'cat-light-bg': '#fff5f8',
+        'cat-light-surface': '#fce9ef',
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],

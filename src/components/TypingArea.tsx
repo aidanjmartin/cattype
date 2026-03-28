@@ -158,7 +158,7 @@ export const TypingArea: React.FC<Props> = ({
       ref={containerRef}
       className="relative rounded-xl overflow-hidden cursor-text select-none"
       style={{
-        background: 'rgba(22, 33, 62, 0.5)',
+        background: 'rgba(43, 22, 34, 0.6)',
         padding: '2rem',
         minHeight: `${lh * 3 + 64}px`,
         maxHeight: `${lh * 3 + 64}px`,
@@ -218,9 +218,9 @@ export const TypingArea: React.FC<Props> = ({
               {ws.chars.map((c, ci) => {
                 let color: string;
                 if (wi < currentWordIndex) {
-                  color = c.status === 'correct' ? '#b8e0d2' : (c.status === 'incorrect' || c.status === 'extra') ? '#ff6b6b' : '#4a4e69';
+                  color = c.status === 'correct' ? '#98d4b8' : (c.status === 'incorrect' || c.status === 'extra') ? '#ff7878' : '#7a4d63';
                 } else if (wi === currentWordIndex) {
-                  color = c.status === 'correct' ? '#b8e0d2' : (c.status === 'incorrect' || c.status === 'extra') ? '#ff6b6b' : '#4a4e69';
+                  color = c.status === 'correct' ? '#98d4b8' : (c.status === 'incorrect' || c.status === 'extra') ? '#ff7878' : '#7a4d63';
                 } else {
                   color = '#4a4e69';
                 }

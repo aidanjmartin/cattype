@@ -1,7 +1,7 @@
 import type { TestResult, Settings } from '../types';
 
-const RESULTS_KEY = 'nekotype_results';
-const SETTINGS_KEY = 'nekotype_settings';
+const RESULTS_KEY = 'cattype_results';
+const SETTINGS_KEY = 'cattype_settings';
 
 export function saveResult(result: TestResult): void {
   const results = getResults();

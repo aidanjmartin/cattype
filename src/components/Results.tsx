@@ -31,25 +31,22 @@ export const Results: React.FC<Props> = ({ result, onRestart, catAnimations }) =
 
   return (
     <div className="animate-slide-up w-full max-w-2xl mx-auto px-4">
-      <div
-        className="rounded-2xl p-8"
-        style={{ background: '#16213e' }}
-      >
+      <div className="rounded-2xl p-8" style={{ background: '#2b1622' }}>
         {/* WPM Hero */}
         <div className="flex items-start justify-between mb-8">
           <div>
-            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#4a4e69' }}>wpm</div>
-            <div className="text-7xl font-bold font-mono" style={{ color: '#f7a8b8' }}>
+            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#7a4d63' }}>wpm</div>
+            <div className="text-7xl font-bold font-mono" style={{ color: '#f7a8c0' }}>
               {result.wpm}
             </div>
-            <div className="text-sm mt-1" style={{ color: '#4a4e69' }}>
-              raw: <span className="font-mono" style={{ color: '#f5f0e8' }}>{result.rawWpm}</span>
+            <div className="text-sm mt-1" style={{ color: '#7a4d63' }}>
+              raw: <span className="font-mono" style={{ color: '#fceef5' }}>{result.rawWpm}</span>
             </div>
           </div>
 
           <div className="flex flex-col items-end gap-4">
             <CatMascot state={catState} animated={catAnimations} />
-            <p className="text-xs text-right max-w-xs" style={{ color: '#4a4e69' }}>
+            <p className="text-xs text-right max-w-xs" style={{ color: '#7a4d63' }}>
               {getWpmComment(result.wpm)}
             </p>
           </div>
@@ -57,35 +54,35 @@ export const Results: React.FC<Props> = ({ result, onRestart, catAnimations }) =
 
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="rounded-xl p-4" style={{ background: 'rgba(247,168,184,0.05)' }}>
-            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#4a4e69' }}>accuracy</div>
-            <div className="text-2xl font-bold font-mono" style={{ color: '#b8e0d2' }}>
+          <div className="rounded-xl p-4" style={{ background: 'rgba(247,168,192,0.08)' }}>
+            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#7a4d63' }}>accuracy</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: '#98d4b8' }}>
               {result.accuracy}%
             </div>
           </div>
-          <div className="rounded-xl p-4" style={{ background: 'rgba(247,168,184,0.05)' }}>
-            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#4a4e69' }}>consistency</div>
-            <div className="text-2xl font-bold font-mono" style={{ color: '#f5f0e8' }}>
+          <div className="rounded-xl p-4" style={{ background: 'rgba(247,168,192,0.08)' }}>
+            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#7a4d63' }}>consistency</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: '#fceef5' }}>
               {result.consistency}%
             </div>
           </div>
-          <div className="rounded-xl p-4" style={{ background: 'rgba(247,168,184,0.05)' }}>
-            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#4a4e69' }}>characters</div>
-            <div className="text-sm font-mono mt-1" style={{ color: '#f5f0e8' }}>
-              <span style={{ color: '#b8e0d2' }}>{result.correctChars}</span>
-              <span style={{ color: '#4a4e69' }}>/</span>
-              <span style={{ color: '#ff6b6b' }}>{result.incorrectChars}</span>
-              <span style={{ color: '#4a4e69' }}>/</span>
-              <span style={{ color: '#4a4e69' }}>{result.extraChars}</span>
+          <div className="rounded-xl p-4" style={{ background: 'rgba(247,168,192,0.08)' }}>
+            <div className="text-xs uppercase tracking-widest mb-1" style={{ color: '#7a4d63' }}>characters</div>
+            <div className="text-sm font-mono mt-1">
+              <span style={{ color: '#98d4b8' }}>{result.correctChars}</span>
+              <span style={{ color: '#7a4d63' }}>/</span>
+              <span style={{ color: '#ff7878' }}>{result.incorrectChars}</span>
+              <span style={{ color: '#7a4d63' }}>/</span>
+              <span style={{ color: '#7a4d63' }}>{result.extraChars}</span>
             </div>
-            <div className="text-xs mt-1" style={{ color: '#4a4e69' }}>cor/inc/ext</div>
+            <div className="text-xs mt-1" style={{ color: '#7a4d63' }}>cor/inc/ext</div>
           </div>
         </div>
 
         {/* Chart */}
         {result.wpmHistory.length > 1 && (
           <div className="mb-8">
-            <div className="text-xs uppercase tracking-widest mb-3" style={{ color: '#4a4e69' }}>wpm over time</div>
+            <div className="text-xs uppercase tracking-widest mb-3" style={{ color: '#7a4d63' }}>wpm over time</div>
             <WpmChart data={result.wpmHistory} />
           </div>
         )}
@@ -95,15 +92,15 @@ export const Results: React.FC<Props> = ({ result, onRestart, catAnimations }) =
           <button
             onClick={onRestart}
             className="px-8 py-3 rounded-full font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95"
-            style={{ background: '#f7a8b8', color: '#1a1a2e' }}
+            style={{ background: '#f7a8c0', color: '#1e1015' }}
           >
             Next Test
           </button>
-          <p className="text-xs" style={{ color: '#4a4e69' }}>
+          <p className="text-xs" style={{ color: '#7a4d63' }}>
             or press{' '}
-            <kbd className="px-1.5 py-0.5 rounded text-xs" style={{ background: '#1a1a2e' }}>Tab</kbd>
+            <kbd className="px-1.5 py-0.5 rounded text-xs" style={{ background: '#1e1015' }}>Tab</kbd>
             {' + '}
-            <kbd className="px-1.5 py-0.5 rounded text-xs" style={{ background: '#1a1a2e' }}>Enter</kbd>
+            <kbd className="px-1.5 py-0.5 rounded text-xs" style={{ background: '#1e1015' }}>Enter</kbd>
             {' to restart'}
           </p>
         </div>

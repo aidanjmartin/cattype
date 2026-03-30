@@ -18,15 +18,15 @@ const WORD_SETS: { value: WordSet; label: string }[] = [
 export const TestConfig: React.FC<Props> = ({ duration, wordSet, onDurationChange, onWordSetChange }) => {
   return (
     <div className="flex flex-col items-center gap-3 mb-6">
-      <div className="flex items-center gap-1 p-1 rounded-full" style={{ background: 'rgba(247,168,192,0.1)' }}>
+      <div className="flex items-center gap-1 p-1 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
         {DURATIONS.map(d => (
           <button
             key={d}
             onClick={() => onDurationChange(d)}
             className="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
             style={duration === d
-              ? { background: '#f7a8c0', color: '#1e1015', fontWeight: 700 }
-              : { color: '#7a4d63' }
+              ? { background: 'var(--accent)', color: 'var(--bg)', fontWeight: 700 }
+              : { color: 'var(--muted)' }
             }
           >
             {d}s
@@ -36,11 +36,11 @@ export const TestConfig: React.FC<Props> = ({ duration, wordSet, onDurationChang
       <div className="flex items-center gap-2">
         {WORD_SETS.map((ws, i) => (
           <React.Fragment key={ws.value}>
-            {i > 0 && <span style={{ color: '#7a4d63' }}>│</span>}
+            {i > 0 && <span style={{ color: 'var(--muted)' }}>│</span>}
             <button
               onClick={() => onWordSetChange(ws.value)}
               className="text-sm transition-colors duration-200"
-              style={{ color: wordSet === ws.value ? '#f7a8c0' : '#7a4d63', fontWeight: wordSet === ws.value ? 600 : 400 }}
+              style={{ color: wordSet === ws.value ? 'var(--accent)' : 'var(--muted)', fontWeight: wordSet === ws.value ? 600 : 400 }}
             >
               {ws.label}
             </button>

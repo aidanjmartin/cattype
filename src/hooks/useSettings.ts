@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Settings } from '../types';
+import type { Settings, Theme } from '../types';
 import { saveSettings, loadSettings } from '../utils/storage';
 
 const defaultSettings: Settings = {
@@ -8,8 +8,10 @@ const defaultSettings: Settings = {
   smoothCaret: true,
   soundEnabled: false,
   catAnimations: true,
-  sakuraEnabled: false,
+  bgAnimations: true,
 };
+
+const ALL_THEMES: Theme[] = ['dark', 'light', 'matcha', 'chai', 'strawberry', 'galaxy', 'sakura', 'seaside', 'school'];
 
 export function useSettings() {
   const [settings, setSettings] = useState<Settings>(() => ({
@@ -19,13 +21,9 @@ export function useSettings() {
 
   useEffect(() => {
     saveSettings(settings);
-    if (settings.theme === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    } else {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-    }
+    const html = document.documentElement;
+    ALL_THEMES.forEach(t => html.classList.remove(`theme-${t}`));
+    html.classList.add(`theme-${settings.theme}`);
   }, [settings]);
 
   function updateSetting<K extends keyof Settings>(key: K, value: Settings[K]) {

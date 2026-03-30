@@ -1,7 +1,9 @@
-export type View = 'test' | 'results' | 'stats' | 'gallery';
+export type View = 'test' | 'results' | 'stats' | 'gallery' | 'shop' | 'goals';
 export type TestDuration = 15 | 30 | 60 | 120;
 export type WordSet = 'english' | 'english1k' | 'quotes';
 export type CatState = 'idle' | 'typing' | 'happy' | 'excited' | 'mindblown' | 'sleepy';
+export type Theme = 'dark' | 'light' | 'matcha' | 'chai' | 'strawberry' | 'galaxy' | 'sakura' | 'seaside' | 'school';
+export type CatSkin = 'default' | 'cosmic' | 'golden' | 'forest' | 'sunset';
 
 export interface CharState {
   char: string;
@@ -31,12 +33,25 @@ export interface TestResult {
 }
 
 export interface Settings {
-  theme: 'dark' | 'light';
+  theme: Theme;
   fontSize: 'small' | 'medium' | 'large';
   smoothCaret: boolean;
   soundEnabled: boolean;
   catAnimations: boolean;
-  sakuraEnabled: boolean;
+  bgAnimations: boolean;
+}
+
+export interface PlayerData {
+  coins: number;
+  totalXP: number;
+  unlockedThemes: Theme[];
+  unlockedCatSkins: CatSkin[];
+  activeCatSkin: CatSkin;
+  completedGoals: string[];
+  totalWordsTyped: number;
+  totalTests: number;
+  bestWpm: number;
+  bestAccuracy: number;
 }
 
 export interface Quote {

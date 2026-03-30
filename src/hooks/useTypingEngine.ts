@@ -9,6 +9,22 @@ function buildWordState(word: string): WordState {
   };
 }
 
+function rebuildWordChars(word: string, typed: string): CharState[] {
+  const base: CharState[] = word.split('').map((char, i) => {
+    if (i < typed.length) {
+      return { char, status: typed[i] === char ? 'correct' : 'incorrect' };
+    }
+    return { char, status: 'pending' };
+  });
+  const extra: CharState[] = [];
+  if (typed.length > word.length) {
+    for (let i = word.length; i < typed.length; i++) {
+      extra.push({ char: typed[i], status: 'extra' });
+    }
+  }
+  return [...base, ...extra];
+}
+
 export function useTypingEngine(words: string[]) {
   const [wordStates, setWordStates] = useState<WordState[]>(() =>
     words.map(buildWordState)
@@ -16,7 +32,6 @@ export function useTypingEngine(words: string[]) {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
 
-  // Stats refs (don't need to trigger renders)
   const correctCharsRef = useRef(0);
   const incorrectCharsRef = useRef(0);
   const extraCharsRef = useRef(0);
@@ -41,25 +56,7 @@ export function useTypingEngine(words: string[]) {
     setWordStates(prev => {
       const next = [...prev];
       const current = { ...next[currentWordIndex] };
-      const word = words[currentWordIndex];
-
-      // Build new chars array
-      const newChars: CharState[] = word.split('').map((char, i) => {
-        if (i < input.length) {
-          return { char, status: input[i] === char ? 'correct' : 'incorrect' };
-        }
-        return { char, status: 'pending' };
-      });
-
-      // Handle extra characters (overflow)
-      const extraChars: CharState[] = [];
-      if (input.length > word.length) {
-        for (let i = word.length; i < input.length; i++) {
-          extraChars.push({ char: input[i], status: 'extra' });
-        }
-      }
-
-      current.chars = [...newChars, ...extraChars];
+      current.chars = rebuildWordChars(words[currentWordIndex], input);
       current.typed = input;
       next[currentWordIndex] = current;
       return next;
@@ -67,8 +64,6 @@ export function useTypingEngine(words: string[]) {
   }, [currentWordIndex, hasStarted, words]);
 
   const commitWord = useCallback(() => {
-    // Count stats OUTSIDE the setState updater — React StrictMode calls updaters
-    // twice in development, which would double-count any ref mutations inside them.
     const currentWord = wordStates[currentWordIndex];
     if (!currentWord) return;
 
@@ -77,7 +72,7 @@ export function useTypingEngine(words: string[]) {
       if (c.status === 'correct') correct++;
       else if (c.status === 'incorrect') incorrect++;
       else if (c.status === 'extra') extra++;
-      else if (c.status === 'pending') incorrect++; // missed = incorrect
+      else if (c.status === 'pending') incorrect++;
     }
     correctCharsRef.current += correct;
     incorrectCharsRef.current += incorrect;
@@ -97,6 +92,44 @@ export function useTypingEngine(words: string[]) {
     setCurrentWordIndex(prev => prev + 1);
   }, [currentWordIndex, wordStates]);
 
+  // Revert the last committed word, returning what was typed so the caller
+  // can restore currentInput.
+  const revertWord = useCallback((): string | null => {
+    if (currentWordIndex === 0) return null;
+
+    const prevIndex = currentWordIndex - 1;
+    const prevWordState = wordStates[prevIndex];
+    if (!prevWordState?.isComplete) return null;
+
+    const prevTyped = prevWordState.typed;
+    const word = words[prevIndex];
+
+    // Subtract stats that were counted when this word was committed
+    let correct = 0, incorrect = 0, extra = 0;
+    for (const c of prevWordState.chars) {
+      if (c.status === 'correct') correct++;
+      else if (c.status === 'incorrect') incorrect++;
+      else if (c.status === 'extra') extra++;
+    }
+    correctCharsRef.current = Math.max(0, correctCharsRef.current - correct);
+    incorrectCharsRef.current = Math.max(0, incorrectCharsRef.current - incorrect);
+    extraCharsRef.current = Math.max(0, extraCharsRef.current - extra);
+    totalTypedRef.current = Math.max(0, totalTypedRef.current - prevTyped.length);
+
+    setWordStates(prev => {
+      const next = [...prev];
+      next[prevIndex] = {
+        ...next[prevIndex],
+        chars: rebuildWordChars(word, prevTyped),
+        isComplete: false,
+      };
+      return next;
+    });
+    setCurrentWordIndex(prevIndex);
+
+    return prevTyped;
+  }, [currentWordIndex, wordStates, words]);
+
   const getStats = useCallback(() => ({
     correctChars: correctCharsRef.current,
     incorrectChars: incorrectCharsRef.current,
@@ -110,6 +143,7 @@ export function useTypingEngine(words: string[]) {
     hasStarted,
     processInput,
     commitWord,
+    revertWord,
     reset,
     getStats,
   };

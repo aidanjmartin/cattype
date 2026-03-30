@@ -1,7 +1,9 @@
-import type { TestResult, Settings } from '../types';
+import type { TestResult, Settings, PlayerData } from '../types';
+import { DEFAULT_PLAYER } from './player';
 
 const RESULTS_KEY = 'cattype_results';
 const SETTINGS_KEY = 'cattype_settings';
+const PLAYER_KEY = 'cattype_player';
 
 export function saveResult(result: TestResult): void {
   const results = getResults();
@@ -29,8 +31,28 @@ export function saveSettings(settings: Settings): void {
 export function loadSettings(): Partial<Settings> {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    return raw ? JSON.parse(raw) : {};
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    // Migrate old sakuraEnabled → bgAnimations
+    if ('sakuraEnabled' in parsed && !('bgAnimations' in parsed)) {
+      parsed.bgAnimations = parsed.sakuraEnabled;
+    }
+    return parsed as Partial<Settings>;
   } catch {
     return {};
+  }
+}
+
+export function savePlayer(player: PlayerData): void {
+  localStorage.setItem(PLAYER_KEY, JSON.stringify(player));
+}
+
+export function loadPlayer(): PlayerData {
+  try {
+    const raw = localStorage.getItem(PLAYER_KEY);
+    if (!raw) return { ...DEFAULT_PLAYER };
+    return { ...DEFAULT_PLAYER, ...JSON.parse(raw) };
+  } catch {
+    return { ...DEFAULT_PLAYER };
   }
 }

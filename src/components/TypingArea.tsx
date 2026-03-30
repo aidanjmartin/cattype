@@ -9,6 +9,7 @@ interface Props {
   currentInput: string;
   onInput: (value: string) => void;
   onCommitWord: () => void;
+  onRevertWord: () => void;
   isActive: boolean;
   onStart: () => void;
   smoothCaret: boolean;
@@ -20,6 +21,7 @@ interface Props {
 
 const FONT_SIZES = { small: '16px', medium: '20px', large: '24px' };
 const LINE_HEIGHT_MAP = { small: 32, medium: 40, large: 48 };
+const VISIBLE_LINES = 5;
 
 export const TypingArea: React.FC<Props> = ({
   wordStates,
@@ -27,6 +29,7 @@ export const TypingArea: React.FC<Props> = ({
   currentInput,
   onInput,
   onCommitWord,
+  onRevertWord,
   isActive: _isActive,
   onStart: _onStart,
   smoothCaret,
@@ -48,19 +51,16 @@ export const TypingArea: React.FC<Props> = ({
     onFocus();
   }, [onFocus]);
 
-  // Auto focus on mount
   useEffect(() => {
     setTimeout(() => focusInput(), 50);
   }, []);
 
-  // Reset scroll on restart (currentWordIndex returns to 0)
   useEffect(() => {
     if (currentWordIndex === 0) {
       setScrollOffset(0);
     }
   }, [currentWordIndex]);
 
-  // Update caret position and scroll
   useEffect(() => {
     if (!wordsRef.current || !containerRef.current) return;
 
@@ -71,26 +71,22 @@ export const TypingArea: React.FC<Props> = ({
     const wordChars = wordStates[currentWordIndex]?.chars || [];
     const typedLength = currentInput.length;
 
-    // --- Scroll logic ---
-    // Compare current word's position to first word's position (both share the same
-    // CSS transform, so their relative offset is independent of scrollOffset).
     const firstWordEl = wordsRef.current.querySelector('[data-word="0"]');
     if (firstWordEl) {
       const wordTop = wordEl.getBoundingClientRect().top;
       const firstWordTop = firstWordEl.getBoundingClientRect().top;
-      // contentRow = which row this word sits on in the full unclipped content
       const contentRow = Math.round((wordTop - firstWordTop) / lh);
-      // Keep the current word at content row 1 (second line) so there's always
-      // a line of upcoming text visible below it.
       if (contentRow >= 2) {
         const targetOffset = -(contentRow - 1) * lh;
         setScrollOffset(prev => (prev !== targetOffset ? targetOffset : prev));
+      } else if (contentRow < 2 && scrollOffset < 0) {
+        // Scrolled back (revert word), readjust
+        const targetOffset = -(contentRow - 1) * lh;
+        const clamped = Math.min(0, targetOffset);
+        setScrollOffset(prev => (prev !== clamped ? clamped : prev));
       }
     }
 
-    // --- Caret position ---
-    // rect.top already reflects the CSS translateY transform, so we must NOT
-    // add scrollOffset again — that would double-apply it.
     let caretLeft = 0;
     let caretTop = 8;
 
@@ -116,7 +112,7 @@ export const TypingArea: React.FC<Props> = ({
     }
 
     setCaretPos({ top: caretTop, left: caretLeft, height: lh });
-  }, [currentWordIndex, currentInput, wordStates, fontSize, lh]);
+  }, [currentWordIndex, currentInput, wordStates, fontSize, lh, scrollOffset]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Tab') {
@@ -130,42 +126,44 @@ export const TypingArea: React.FC<Props> = ({
       }
       return;
     }
-    // Handle backspace explicitly so it always works regardless of the character
-    // being deleted (punctuation, apostrophes, etc. can trip up browser defaults
-    // on some OS/keyboard combos with controlled inputs).
     if (e.key === 'Backspace') {
       e.preventDefault();
       if (e.ctrlKey || e.metaKey) {
         onInput('');
-      } else {
-        onInput(currentInput.slice(0, -1));
+        return;
       }
+      if (currentInput === '') {
+        // Backspace into previous word
+        onRevertWord();
+        return;
+      }
+      onInput(currentInput.slice(0, -1));
       return;
     }
-  }, [currentInput, onCommitWord, onInput]);
+  }, [currentInput, onCommitWord, onInput, onRevertWord]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    // Don't allow space in input (handled by space key)
     if (val.includes(' ')) return;
     onInput(val);
   }, [onInput]);
 
   const fontSizeVal = FONT_SIZES[fontSize];
+  const areaHeight = lh * VISIBLE_LINES;
 
   return (
     <div
       ref={containerRef}
       className="relative rounded-xl overflow-hidden cursor-text select-none"
       style={{
-        background: 'rgba(43, 22, 34, 0.6)',
+        background: 'var(--surface)',
         padding: '2rem',
-        minHeight: `${lh * 3 + 64}px`,
-        maxHeight: `${lh * 3 + 64}px`,
+        minHeight: `${areaHeight + 64}px`,
+        maxHeight: `${areaHeight + 64}px`,
+        border: '1px solid rgba(255,255,255,0.04)',
       }}
       onClick={focusInput}
     >
-      {/* Hidden input */}
       <input
         ref={inputRef}
         type="text"
@@ -183,14 +181,7 @@ export const TypingArea: React.FC<Props> = ({
         tabIndex={-1}
       />
 
-      {/* Words container with scroll */}
-      <div
-        style={{
-          overflow: 'hidden',
-          height: `${lh * 3}px`,
-          position: 'relative',
-        }}
-      >
+      <div style={{ overflow: 'hidden', height: `${areaHeight}px`, position: 'relative' }}>
         <div
           ref={wordsRef}
           style={{
@@ -213,25 +204,24 @@ export const TypingArea: React.FC<Props> = ({
                 display: 'inline-block',
                 position: 'relative',
                 marginBottom: `${lh * 0.1}px`,
+                // Underline current word while typing
+                borderBottom: wi === currentWordIndex ? '2px solid var(--muted)' : '2px solid transparent',
               }}
             >
               {ws.chars.map((c, ci) => {
                 let color: string;
-                if (wi < currentWordIndex) {
-                  color = c.status === 'correct' ? '#98d4b8' : (c.status === 'incorrect' || c.status === 'extra') ? '#ff7878' : '#7a4d63';
-                } else if (wi === currentWordIndex) {
-                  color = c.status === 'correct' ? '#98d4b8' : (c.status === 'incorrect' || c.status === 'extra') ? '#ff7878' : '#7a4d63';
+                if (wi < currentWordIndex || wi === currentWordIndex) {
+                  if (c.status === 'correct') color = 'var(--correct)';
+                  else if (c.status === 'incorrect' || c.status === 'extra') color = 'var(--error)';
+                  else color = 'var(--muted)';
                 } else {
-                  color = '#4a4e69';
+                  color = 'rgba(255,255,255,0.18)';
                 }
                 return (
                   <span
                     key={ci}
                     data-char={ci}
-                    style={{
-                      color,
-                      display: 'inline-block',
-                    }}
+                    style={{ color, display: 'inline-block' }}
                   >
                     {c.char}
                   </span>
@@ -242,10 +232,7 @@ export const TypingArea: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Caret */}
       <Caret position={caretPos} smooth={smoothCaret} isActive={isFocused} />
-
-      {/* Focus overlay */}
       {!isFocused && <FocusOverlay onFocus={focusInput} />}
     </div>
   );

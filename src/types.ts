@@ -4,6 +4,7 @@ export type WordSet = 'english' | 'english1k' | 'quotes';
 export type CatState = 'idle' | 'typing' | 'happy' | 'excited' | 'mindblown' | 'sleepy';
 export type Theme = 'dark' | 'light' | 'matcha' | 'chai' | 'strawberry' | 'galaxy' | 'sakura' | 'seaside' | 'school';
 export type CatSkin = 'default' | 'cosmic' | 'golden' | 'forest' | 'sunset';
+export type Soundtrack = 'cafe-lofi' | 'anime-study' | 'ocean-waves' | 'space-ambient' | 'forest-rain' | 'strawberry-pop';
 
 export interface CharState {
   char: string;
@@ -39,6 +40,7 @@ export interface Settings {
   soundEnabled: boolean;
   catAnimations: boolean;
   bgAnimations: boolean;
+  musicVolume: number; // 0–1, default 0.3
 }
 
 export interface PlayerData {
@@ -52,6 +54,7 @@ export interface PlayerData {
   totalTests: number;
   bestWpm: number;
   bestAccuracy: number;
+  unlockedSoundtracks: Soundtrack[];
 }
 
 export interface Quote {

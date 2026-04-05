@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Source assets (processed versions live in public/)
+/cattype-logo.png
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

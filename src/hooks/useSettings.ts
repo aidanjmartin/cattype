@@ -9,6 +9,7 @@ const defaultSettings: Settings = {
   soundEnabled: false,
   catAnimations: true,
   bgAnimations: true,
+  musicVolume: 0.3,
 };
 
 const ALL_THEMES: Theme[] = ['dark', 'light', 'matcha', 'chai', 'strawberry', 'galaxy', 'sakura', 'seaside', 'school'];

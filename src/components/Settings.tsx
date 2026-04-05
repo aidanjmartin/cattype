@@ -5,6 +5,7 @@ interface Props {
   settings: SettingsType;
   onUpdate: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => void;
   onClose: () => void;
+  unlockedThemes: Theme[];
 }
 
 interface ThemeSwatch {
@@ -36,7 +37,7 @@ const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ la
   </div>
 );
 
-export const Settings: React.FC<Props> = ({ settings, onUpdate, onClose }) => {
+export const Settings: React.FC<Props> = ({ settings, onUpdate, onClose, unlockedThemes }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }} />
@@ -59,20 +60,24 @@ export const Settings: React.FC<Props> = ({ settings, onUpdate, onClose }) => {
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm" style={{ color: 'var(--muted)' }}>theme</span>
-              <span className="text-xs" style={{ color: 'var(--muted)' }}>☀️ = light theme · 🔒 = buy in shop</span>
+              <span className="text-xs" style={{ color: 'var(--muted)' }}>☀️ = light · 🔒 = buy in shop</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {THEMES.map(t => {
                 const active = settings.theme === t.id;
+                const unlocked = unlockedThemes.includes(t.id);
                 return (
                   <button
                     key={t.id}
-                    onClick={() => onUpdate('theme', t.id)}
-                    className="rounded-xl p-2.5 flex flex-col items-center gap-1.5 transition-all duration-150 hover:scale-105"
+                    onClick={() => unlocked ? onUpdate('theme', t.id) : undefined}
+                    disabled={!unlocked}
+                    className="rounded-xl p-2.5 flex flex-col items-center gap-1.5 transition-all duration-150"
                     style={{
                       background: t.bg,
                       border: active ? `2px solid ${t.accent}` : `2px solid transparent`,
                       boxShadow: active ? `0 0 12px ${t.accent}55` : 'none',
+                      opacity: unlocked ? 1 : 0.45,
+                      cursor: unlocked ? 'pointer' : 'not-allowed',
                     }}
                   >
                     <div className="flex gap-1">
@@ -80,7 +85,9 @@ export const Settings: React.FC<Props> = ({ settings, onUpdate, onClose }) => {
                       <div style={{ width: 10, height: 10, borderRadius: '50%', background: t.correct }} />
                       <div style={{ width: 10, height: 10, borderRadius: '50%', background: t.surface, border: '1px solid rgba(128,128,128,0.2)' }} />
                     </div>
-                    <span style={{ color: t.accent, fontSize: '10px', fontWeight: 600 }}>{t.label}</span>
+                    <span style={{ color: t.accent, fontSize: '10px', fontWeight: 600 }}>
+                      {unlocked ? t.label : `🔒 ${t.label}`}
+                    </span>
                   </button>
                 );
               })}

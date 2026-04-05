@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { PlayerData, Theme, CatSkin } from '../types';
-import { SHOP_THEMES, SHOP_CAT_SKINS } from '../utils/player';
+import type { PlayerData, Theme, CatSkin, Soundtrack } from '../types';
+import { SHOP_THEMES, SHOP_CAT_SKINS, SHOP_SOUNDTRACKS } from '../utils/player';
 import { CatMascot } from './CatMascot';
 
 interface Props {
@@ -8,12 +8,13 @@ interface Props {
   onBuyTheme: (id: Theme) => void;
   onBuyCatSkin: (id: CatSkin) => void;
   onEquipCatSkin: (id: CatSkin) => void;
+  onBuySoundtrack: (id: Soundtrack) => void;
   onBack: () => void;
 }
 
-type Tab = 'themes' | 'cats';
+type Tab = 'themes' | 'cats' | 'music';
 
-export const Shop: React.FC<Props> = ({ player, onBuyTheme, onBuyCatSkin, onEquipCatSkin, onBack }) => {
+export const Shop: React.FC<Props> = ({ player, onBuyTheme, onBuyCatSkin, onEquipCatSkin, onBuySoundtrack, onBack }) => {
   const [tab, setTab] = useState<Tab>('themes');
 
   return (
@@ -41,7 +42,7 @@ export const Shop: React.FC<Props> = ({ player, onBuyTheme, onBuyCatSkin, onEqui
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 p-1 rounded-full w-fit" style={{ background: 'var(--surface)' }}>
-        {(['themes', 'cats'] as Tab[]).map(t => (
+        {(['themes', 'cats', 'music'] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -51,7 +52,7 @@ export const Shop: React.FC<Props> = ({ player, onBuyTheme, onBuyCatSkin, onEqui
               : { color: 'var(--muted)' }
             }
           >
-            {t}
+            {t === 'music' ? '♫ music' : t}
           </button>
         ))}
       </div>
@@ -170,6 +171,68 @@ export const Shop: React.FC<Props> = ({ player, onBuyTheme, onBuyCatSkin, onEqui
                     🪙 {item.price}
                   </button>
                 )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Music grid */}
+      {tab === 'music' && (
+        <div className="flex flex-col gap-3">
+          <p className="text-xs mb-1" style={{ color: 'var(--muted)' }}>
+            Soundtracks shuffle while you type. Download tracks and place them in{' '}
+            <code style={{ color: 'var(--accent)' }}>/public/music/</code> — see{' '}
+            <code style={{ color: 'var(--accent)' }}>src/utils/player.ts</code> for filenames &amp; Pixabay sources.
+          </p>
+          {SHOP_SOUNDTRACKS.map(item => {
+            const owned = player.unlockedSoundtracks.includes(item.id);
+            const canAfford = player.coins >= item.price;
+            const isFree = item.price === 0;
+            return (
+              <div
+                key={item.id}
+                className="rounded-2xl p-4 flex items-center gap-4"
+                style={{
+                  background: 'var(--surface)',
+                  border: `1px solid ${owned ? item.accentColor + '44' : 'rgba(255,255,255,0.05)'}`,
+                }}
+              >
+                {/* Emoji + waveform preview */}
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-2xl"
+                  style={{ background: `${item.accentColor}18` }}
+                >
+                  {item.emoji}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm" style={{ color: 'var(--cream)' }}>{item.label}</div>
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>{item.description}</div>
+                  <div className="text-xs mt-0.5" style={{ color: item.accentColor, opacity: 0.7 }}>{item.themeHint}</div>
+                </div>
+
+                {/* Action */}
+                <div className="flex-shrink-0">
+                  {isFree || owned ? (
+                    <div
+                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      style={{ background: `${item.accentColor}22`, color: item.accentColor }}
+                    >
+                      {isFree ? 'free ✓' : 'owned ✓'}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => onBuySoundtrack(item.id)}
+                      disabled={!canAfford}
+                      className="text-xs px-3 py-1.5 rounded-full font-semibold transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                      style={{ background: item.accentColor, color: '#fff' }}
+                    >
+                      🪙 {item.price}
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}

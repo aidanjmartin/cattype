@@ -1,14 +1,15 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { View, TestDuration, WordSet, TestResult, CatState, Theme, CatSkin } from './types';
+import type { View, TestDuration, WordSet, TestResult, CatState, Theme, CatSkin, Soundtrack } from './types';
 import { useSettings } from './hooks/useSettings';
 import { useTimer } from './hooks/useTimer';
 import { useTypingEngine } from './hooks/useTypingEngine';
 import { useStats } from './hooks/useStats';
+import { useMusic } from './hooks/useMusic';
 import { commonWords, extendedWords, getRandomWords } from './data/words';
 import { getRandomQuote } from './data/quotes';
 import { saveResult, savePlayer, loadPlayer } from './utils/storage';
 import { generateId } from './utils/calculations';
-import { processTestResult } from './utils/player';
+import { processTestResult, SHOP_SOUNDTRACKS } from './utils/player';
 import type { GoalDef } from './utils/player';
 
 import { Header } from './components/Header';
@@ -25,6 +26,7 @@ import { RestartButton } from './components/RestartButton';
 import { ThemeBackground } from './components/ThemeBackground';
 import { Shop } from './components/Shop';
 import { Goals } from './components/Goals';
+import { MiniPlayer } from './components/MiniPlayer';
 
 const WORD_COUNT = 80;
 
@@ -91,9 +93,11 @@ export default function App() {
   const { settings, updateSetting } = useSettings();
   const engine = useTypingEngine(words);
   const stats = useStats(duration);
+  const music = useMusic(player.unlockedSoundtracks, settings.musicVolume);
 
   const elapsedRef = useRef(0);
   const statsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const testCompletedRef = useRef(false);
 
   // ── Cat state: driven by current word mistakes, not WPM ──────────────────
   useEffect(() => {
@@ -127,6 +131,8 @@ export default function App() {
   }, [engine.wordStates, engine.currentWordIndex, engine.hasStarted]);
 
   const handleTestComplete = useCallback(() => {
+    if (testCompletedRef.current) return;
+    testCompletedRef.current = true;
     if (statsIntervalRef.current) clearInterval(statsIntervalRef.current);
 
     const engineStats = engine.getStats();
@@ -150,7 +156,7 @@ export default function App() {
 
     saveResult(result);
 
-    const { updatedPlayer, newGoals, coinsEarned } = processTestResult(result, player);
+    const { updatedPlayer, newGoals, coinsEarned } = processTestResult(result, player, engine.currentWordIndex);
     savePlayer(updatedPlayer);
     setPlayer(updatedPlayer);
     setLastCoinsEarned(coinsEarned);
@@ -164,6 +170,7 @@ export default function App() {
 
   const handleFirstKey = useCallback(() => {
     startTimer();
+    music.startIfNotStarted();
     elapsedRef.current = 0;
     statsIntervalRef.current = setInterval(() => {
       elapsedRef.current++;
@@ -171,10 +178,11 @@ export default function App() {
       stats.recordSecond(engineStats.correctChars, elapsedRef.current);
       stats.updateAccuracy(engineStats.correctChars, engineStats.totalTyped);
     }, 1000);
-  }, [startTimer, engine, stats]);
+  }, [startTimer, music, engine, stats]);
 
   const restart = useCallback(() => {
     if (statsIntervalRef.current) clearInterval(statsIntervalRef.current);
+    testCompletedRef.current = false;
     const newWords = generateWords(wordSet);
     setWords(newWords);
     setCurrentInput('');
@@ -189,6 +197,7 @@ export default function App() {
   const handleDurationChange = useCallback((d: TestDuration) => {
     setDuration(d);
     if (statsIntervalRef.current) clearInterval(statsIntervalRef.current);
+    testCompletedRef.current = false;
     const newWords = generateWords(wordSet);
     setWords(newWords); setCurrentInput('');
     engine.reset(newWords); stats.reset(); resetTimer(d);
@@ -198,6 +207,7 @@ export default function App() {
   const handleWordSetChange = useCallback((ws: WordSet) => {
     setWordSet(ws);
     if (statsIntervalRef.current) clearInterval(statsIntervalRef.current);
+    testCompletedRef.current = false;
     const newWords = generateWords(ws);
     setWords(newWords); setCurrentInput('');
     engine.reset(newWords); stats.reset(); resetTimer(duration);
@@ -211,7 +221,12 @@ export default function App() {
     stats.updateAccuracy(engineStats.correctChars, engineStats.totalTyped + value.length);
   }, [engine, handleFirstKey, stats]);
 
-  const handleCommitWord = useCallback(() => { engine.commitWord(); setCurrentInput(''); }, [engine]);
+  const handleCommitWord = useCallback(() => {
+    const isLastWord = engine.currentWordIndex >= words.length - 1;
+    engine.commitWord();
+    setCurrentInput('');
+    if (isLastWord && engine.hasStarted) handleTestComplete();
+  }, [engine, words.length, handleTestComplete]);
   const handleRevertWord = useCallback(() => {
     const prev = engine.revertWord();
     if (prev !== null) setCurrentInput(prev);
@@ -250,6 +265,18 @@ export default function App() {
     });
   }, []);
 
+  const handleBuySoundtrack = useCallback((id: Soundtrack) => {
+    setPlayer(prev => {
+      if (prev.unlockedSoundtracks.includes(id)) return prev;
+      const track = SHOP_SOUNDTRACKS.find(t => t.id === id);
+      const price = track?.price ?? 9999;
+      if (prev.coins < price) return prev;
+      const updated = { ...prev, coins: prev.coins - price, unlockedSoundtracks: [...prev.unlockedSoundtracks, id] };
+      savePlayer(updated);
+      return updated;
+    });
+  }, []);
+
   // Tab+Enter restart
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -262,7 +289,13 @@ export default function App() {
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
   }, [isTabDown, restart]);
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   if (isMobile) {
     return (
       <div className="min-h-screen flex items-center justify-center p-8 text-center" style={{ background: 'var(--bg)' }}>
@@ -355,6 +388,7 @@ export default function App() {
               onBuyTheme={handleBuyTheme}
               onBuyCatSkin={handleBuyCatSkin}
               onEquipCatSkin={handleEquipCatSkin}
+              onBuySoundtrack={handleBuySoundtrack}
               onBack={() => setView('test')}
             />
           )}
@@ -368,8 +402,19 @@ export default function App() {
         </div>
       </main>
 
+      <MiniPlayer
+        isPlaying={music.isPlaying}
+        currentTrack={music.currentTrack}
+        hasEverPlayed={music.hasEverPlayed}
+        volume={settings.musicVolume}
+        theme={settings.theme}
+        onTogglePlay={music.togglePlay}
+        onSkip={music.skipTrack}
+        onVolumeChange={v => updateSetting('musicVolume', v)}
+      />
+
       {settingsOpen && (
-        <Settings settings={settings} onUpdate={updateSetting} onClose={() => setSettingsOpen(false)} />
+        <Settings settings={settings} onUpdate={updateSetting} onClose={() => setSettingsOpen(false)} unlockedThemes={player.unlockedThemes} />
       )}
     </div>
   );

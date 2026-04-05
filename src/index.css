@@ -199,3 +199,50 @@ input:focus { outline: none; }
 .animate-wiggle       { animation: wiggle 0.5s ease-in-out infinite; }
 .animate-pop-in       { animation: pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1); }
 .animate-coin-fly     { animation: coin-fly 1s ease-out forwards; }
+
+/* ── MiniPlayer EQ bars (scaleY is smoother than height) ── */
+@keyframes eq-bar {
+  0%, 100% { transform: scaleY(0.25); }
+  50%       { transform: scaleY(1.0);  }
+}
+.eq-bar {
+  animation: eq-bar 0.75s ease-in-out infinite alternate;
+}
+
+/* ── MiniPlayer glow pulse ── */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.65; }
+}
+.animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+/* ── Mini volume slider ── */
+.mini-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.mini-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  transition: transform 0.1s ease;
+}
+.mini-volume-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
+.mini-volume-slider::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+}

@@ -1,6 +1,7 @@
-import type { TestResult, PlayerData, Theme, CatSkin } from '../types';
+import type { TestResult, PlayerData, Theme, CatSkin, Soundtrack } from '../types';
 
 export const FREE_THEMES: Theme[] = ['dark', 'light'];
+export const FREE_SOUNDTRACKS: Soundtrack[] = ['cafe-lofi'];
 
 export const DEFAULT_PLAYER: PlayerData = {
   coins: 100,
@@ -13,6 +14,7 @@ export const DEFAULT_PLAYER: PlayerData = {
   totalTests: 0,
   bestWpm: 0,
   bestAccuracy: 0,
+  unlockedSoundtracks: ['cafe-lofi'],
 };
 
 export function calculateCoins(result: TestResult): number {
@@ -155,10 +157,48 @@ export const SHOP_CAT_SKINS: ShopCatSkin[] = [
   { id: 'sunset',  label: 'Sunset Cat',   price: 350, description: 'Warm twilight hues',        filter: 'hue-rotate(340deg) saturate(1.6) brightness(1.05)' },
 ];
 
+export interface ShopSoundtrack {
+  id: Soundtrack;
+  label: string;
+  price: number;
+  description: string;
+  emoji: string;
+  accentColor: string; // preview swatch color
+  themeHint: string;   // which theme it pairs with
+}
+
+// File paths expected in /public/music/
+// Download sources (Pixabay Music - free, no attribution required):
+//   cafe-lofi      → search "lofi cafe" on pixabay.com/music
+//   anime-study    → search "kawaii" or "anime study" on pixabay.com/music
+//   ocean-waves    → search "ocean waves" on pixabay.com/music
+//   space-ambient  → search "space ambient" on pixabay.com/music
+//   forest-rain    → search "forest rain" on pixabay.com/music
+//   strawberry-pop → search "cute upbeat" on pixabay.com/music
+// Save each as the filename below and place in /public/music/
+export const SOUNDTRACK_PATHS: Record<Soundtrack, string> = {
+  'cafe-lofi':      '/music/cafe-lofi.mp3',
+  'anime-study':    '/music/anime-study.mp3',
+  'ocean-waves':    '/music/ocean-waves.mp3',
+  'space-ambient':  '/music/space-ambient.mp3',
+  'forest-rain':    '/music/forest-rain.mp3',
+  'strawberry-pop': '/music/strawberry-pop.mp3',
+};
+
+export const SHOP_SOUNDTRACKS: ShopSoundtrack[] = [
+  { id: 'cafe-lofi',      label: 'café lofi',      price: 0,    description: 'Warm coffee-shop beats', emoji: '☕', accentColor: '#f7a8c0', themeHint: 'dark · chai' },
+  { id: 'anime-study',    label: 'anime study',    price: 400,  description: 'Kawaii J-pop study vibes', emoji: '🌸', accentColor: '#d4508a', themeHint: 'sakura · school' },
+  { id: 'ocean-waves',    label: 'ocean waves',    price: 700,  description: 'Calm seaside ambience',   emoji: '🌊', accentColor: '#60d0c8', themeHint: 'seaside' },
+  { id: 'space-ambient',  label: 'space ambient',  price: 1000, description: 'Deep space synth pads',   emoji: '🌌', accentColor: '#9988ff', themeHint: 'galaxy' },
+  { id: 'forest-rain',    label: 'forest rain',    price: 500,  description: 'Soft rain & piano',       emoji: '🌿', accentColor: '#8ccd7c', themeHint: 'matcha' },
+  { id: 'strawberry-pop', label: 'strawberry pop', price: 600,  description: 'Playful bubbly beats',    emoji: '🍓', accentColor: '#ff6b8a', themeHint: 'strawberry' },
+];
+
 // Process a completed test: update player data, check goals, return newly completed goals + coins earned
 export function processTestResult(
   result: TestResult,
-  playerData: PlayerData
+  playerData: PlayerData,
+  wordsTyped?: number
 ): { updatedPlayer: PlayerData; newGoals: GoalDef[]; coinsEarned: number; xpEarned: number } {
   const coinsEarned = calculateCoins(result);
   const xpEarned = coinsEarned;
@@ -168,7 +208,7 @@ export function processTestResult(
     coins: playerData.coins + coinsEarned,
     totalXP: playerData.totalXP + xpEarned,
     totalTests: playerData.totalTests + 1,
-    totalWordsTyped: playerData.totalWordsTyped + result.correctChars / 5, // approx words
+    totalWordsTyped: playerData.totalWordsTyped + (wordsTyped ?? Math.round(result.correctChars / 5)),
     bestWpm: Math.max(playerData.bestWpm, result.wpm),
     bestAccuracy: Math.max(playerData.bestAccuracy, result.accuracy),
   };

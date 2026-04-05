@@ -31,6 +31,9 @@ export function useTypingEngine(words: string[]) {
   );
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
+  // Ref mirrors hasStarted so processInput never double-fires onFirstKey
+  // between renders when two events land before the state update flushes.
+  const hasStartedRef = useRef(false);
 
   const correctCharsRef = useRef(0);
   const incorrectCharsRef = useRef(0);
@@ -41,6 +44,7 @@ export function useTypingEngine(words: string[]) {
     setWordStates(newWords.map(buildWordState));
     setCurrentWordIndex(0);
     setHasStarted(false);
+    hasStartedRef.current = false;
     correctCharsRef.current = 0;
     incorrectCharsRef.current = 0;
     extraCharsRef.current = 0;
@@ -48,7 +52,11 @@ export function useTypingEngine(words: string[]) {
   }, []);
 
   const processInput = useCallback((input: string, onFirstKey: () => void) => {
-    if (!hasStarted && input.length > 0) {
+    // Guard: nothing to do past the last word
+    if (currentWordIndex >= words.length) return;
+
+    if (!hasStartedRef.current && input.length > 0) {
+      hasStartedRef.current = true;
       setHasStarted(true);
       onFirstKey();
     }
@@ -61,7 +69,7 @@ export function useTypingEngine(words: string[]) {
       next[currentWordIndex] = current;
       return next;
     });
-  }, [currentWordIndex, hasStarted, words]);
+  }, [currentWordIndex, words]);
 
   const commitWord = useCallback(() => {
     const currentWord = wordStates[currentWordIndex];
@@ -89,8 +97,8 @@ export function useTypingEngine(words: string[]) {
       next[currentWordIndex] = current;
       return next;
     });
-    setCurrentWordIndex(prev => prev + 1);
-  }, [currentWordIndex, wordStates]);
+    setCurrentWordIndex(prev => Math.min(prev + 1, words.length));
+  }, [currentWordIndex, wordStates, words.length]);
 
   // Revert the last committed word, returning what was typed so the caller
   // can restore currentInput.

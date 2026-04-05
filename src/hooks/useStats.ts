@@ -9,15 +9,14 @@ export function useStats(_duration: number) {
   const elapsedRef = useRef(0);
 
   const recordSecond = useCallback((totalCorrectChars: number, elapsed: number) => {
+    const prevCorrect = totalCorrectAtLastSecondRef.current;
     elapsedRef.current = elapsed;
     totalCorrectAtLastSecondRef.current = totalCorrectChars;
 
     setLiveWpm(calcWpm(totalCorrectChars, elapsed));
 
-    // Per-second WPM for consistency tracking
-    const deltaCorrect = totalCorrectChars - (wpmHistoryRef.current.length > 0
-      ? wpmHistoryRef.current.reduce((acc, _, i, arr) => i === arr.length - 1 ? acc : acc, totalCorrectAtLastSecondRef.current)
-      : 0);
+    // Per-second delta for the WPM chart and consistency tracking
+    const deltaCorrect = totalCorrectChars - prevCorrect;
     const secondWpm = calcWpm(Math.max(0, deltaCorrect), 1);
     wpmHistoryRef.current.push(secondWpm);
   }, []);
